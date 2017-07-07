@@ -209,7 +209,7 @@ void free_memory(double ** data, int n)
 }
 
 int main() {
-    int i, j, n, mat_size_min = 200, mat_size_max = 1000, steps = 200;
+    int i, j, n, mat_size_min = 200, mat_size_max = 2000, steps = 200;
     int gen_iterations = 100;
     int suf_iterations = 0;
     double **matA, **matB, **matC, **matBT, dtime, mean, std;
@@ -226,7 +226,7 @@ int main() {
 
         matA = new double*[i];
         matB = new double*[i];
-        matBT = new double*[n];
+        matBT = new double*[i];
         matC = new double*[i];
 
         for (j = 0; j<i; j++) {
