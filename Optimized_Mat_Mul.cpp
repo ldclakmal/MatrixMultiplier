@@ -240,7 +240,7 @@ int main() {
 
         /*suf_iterations = calculate_sample_size(mata, matb, matc, n);
         cout << "sufficient number of samples: " << suf_iterations;*/
-        suf_iterations = 5;
+        suf_iterations = 20;
         execution_times = new double[suf_iterations];
         test_bench(matA, matB, matBT, matC, execution_times, i, block_size, suf_iterations);
         mean = get_mean(execution_times, suf_iterations);

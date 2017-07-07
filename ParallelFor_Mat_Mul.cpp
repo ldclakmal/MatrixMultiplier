@@ -172,7 +172,7 @@ int main() {
 
         /*suf_iterations = calculate_sample_size(mata, matb, matc, n);
         cout << "sufficient number of samples: " << suf_iterations;*/
-        suf_iterations = 30;
+        suf_iterations = 20;
         execution_times = new double[suf_iterations];
         test_bench(matA, matB, matC, execution_times, i, suf_iterations);
         mean = get_mean(execution_times, suf_iterations);
