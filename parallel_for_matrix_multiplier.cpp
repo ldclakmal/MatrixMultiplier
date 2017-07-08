@@ -124,7 +124,7 @@ int get_num_execution(double mean, double std) {
 
 }
 
-// run the test cases to collect sufficient number of samples and 
+// This method is used for execute the matrix multiplication process for a given number of iterations for a given size of n
 void test_bench(double **mata, double **matb, double **matc, double * execution_times, int n, int num_execution_times)
 {
     double dtime;
@@ -132,16 +132,16 @@ void test_bench(double **mata, double **matb, double **matc, double * execution_
     {
         populate_array(mata, matb, n);
 
-        dtime = omp_get_wtime();
-        get_parallel_matrix_mul(mata, matb, matc, n);
-        dtime = omp_get_wtime() - dtime;
-        execution_times[i] = dtime;
+        dtime = omp_get_wtime();						// Start time
+        get_parallel_matrix_mul(mata, matb, matc, n);	// Execute matrix multiplication
+        dtime = omp_get_wtime() - dtime;				// End time
+        execution_times[i] = dtime;						// Record execution time
 
     }
 
 }
 
-//This method calculates the number of sufficient ammount of samples execution iterations need for the experiment 
+//This method calculates the number of sufficient ammount of samples execution iterations need for the experiment
 
 double calculate_sample_size(double **mata, double **matb, double **matc, int n)
 {
@@ -168,19 +168,15 @@ void free_memory(double ** data, int n)
 
 int main() {
     int i, j, n, mat_size_min = 200, mat_size_max = 2000, steps =200;
-    int gen_iterations = 100;
-    int suf_iterations = 0;
+    int gen_iterations = 100;											// Initial sample size
+    int suf_iterations = 0;												// Store the calculated sample size
     double **matA, **matB, **matC, dtime, mean, std;
     double *execution_times;
-    n = 200;
 
 
-
-    // populate array
-
-    for (size_t i = mat_size_min; i <= mat_size_max; i += steps)
+    for (size_t i = mat_size_min; i <= mat_size_max; i += steps)	// From 200 to 2000 in steps of 200
     {
-        // Allocate memory
+        // Allocate memory for matrices
 
         matA = new double*[i];
         matB = new double*[i];
@@ -195,12 +191,12 @@ int main() {
 
         /*suf_iterations = calculate_sample_size(mata, matb, matc, n);
         cout << "sufficient number of samples: " << suf_iterations;*/
-        suf_iterations = 20;
+        suf_iterations = 50;												// Sufficient amount of iterations
         execution_times = new double[suf_iterations];
-        test_bench(matA, matB, matC, execution_times, i, suf_iterations);
-        mean = get_mean(execution_times, suf_iterations);
+        test_bench(matA, matB, matC, execution_times, i, suf_iterations);		// Execute the matrix multiplication for given number of iterations
+        mean = get_mean(execution_times, suf_iterations);						// Calculate mean of execution times
 
-        cout << "Mean execution time for matrix size " << i << "x" << i << " : " << mean << "s" << endl;
+        cout << "Mean execution time for matrix size " << i << "x" << i << " : " << mean << "s" << endl;	// Print reults
 
         free_memory(matA, i);
         free_memory(matB, i);		// Free allocated memmory for 2-d arrays

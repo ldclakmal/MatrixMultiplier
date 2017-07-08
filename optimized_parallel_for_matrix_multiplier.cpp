@@ -30,15 +30,16 @@
 
 using namespace std;
 
+// retuen the transpose of a given nxn matrix
 inline void transpose(double **matA, double **matB, int n, int block_size) {
 
 #pragma omp parallel
     {
-        int_fast16_t i, j;
-#pragma omp for
+        int_fast16_t i, j;								// Use fast_int to make the process quick
+#pragma omp for                                          // Make the first loop parallel
         for (i = 0; i < n; i += block_size) {
             for (j = 0; j < n; j+= block_size) {
-                for (size_t k = 0; k < block_size; k++)
+                for (size_t k = 0; k < block_size; k++)			// Use cache blocking to make the transpose quickly
                 {
                     for (size_t l = 0; l < block_size; l++)
                     {
@@ -51,6 +52,7 @@ inline void transpose(double **matA, double **matB, int n, int block_size) {
     }
 }
 
+//Return the dot product of two vectors
 inline double get_vector_dot_product(double *vecA, double *vecB, int n) {
 
     double temp = 0.0;
@@ -59,7 +61,7 @@ inline double get_vector_dot_product(double *vecA, double *vecB, int n) {
         temp += vecA[8 * i] * vecB[8 * i]
                 + vecA[8 * i + 1] * vecB[8 * i + 1]
                 + vecA[8 * i + 2] * vecB[8 * i + 2]
-                + vecA[8 * i + 3] * vecB[8 * i + 3]
+                + vecA[8 * i + 3] * vecB[8 * i + 3]						// Loop unrolling of 8 for fast execution
                 + vecA[8 * i + 4] * vecB[8 * i + 4]
                 + vecA[8 * i + 5] * vecB[8 * i + 5]
                 + vecA[8 * i + 6] * vecB[8 * i + 6]
@@ -71,46 +73,18 @@ inline double get_vector_dot_product(double *vecA, double *vecB, int n) {
 
 }
 
-//void get_mat_mulT(double **matA, double **matB, double **matC, int n)
-//{
-//	int_fast16_t i, j, k;
-//	double **matB2;
-//
-//	matB2 = new double*[n];
-//	for (i = 0; i<n; i++) {
-//
-//		matB2[i] = new double[n];
-//
-//	}
-//
-//	transpose(matB, matB2, n, blo);
-//	for (i = 0; i < n; i++) {
-//		for (j = 0; j < n; j++) {
-//			double dot = 0;
-//			for (k = 0; k < n; k++) {
-//				dot += matA[i][k] * matB2[j][k];
-//			}
-//			matC[i][j] = dot;
-//		}
-//	}
-//
-//}
-
+// Return the multiplication of given matrices using optimized techniques
 void get_parallel_matrix_mulT(double **matA, double **matB, double **matBT, double **matC, int n, int block_size)
 {
 
-    transpose(matB, matBT, n, block_size);
+    transpose(matB, matBT, n, block_size);								// Take the transpose of the matrix
 #pragma omp parallel
     {
         int_fast16_t i, j, k;
-#pragma omp for
+#pragma omp for                                       // Make the first loop parallel
         for (i = 0; i < n; i++) {
             for (j = 0; j < n; j++) {
-                /*double dot = 0;
-                for (k = 0; k < n; k++) {
-                    dot += matA[i][k] * matB2[j][k];
-                }*/
-                matC[i][j] = get_vector_dot_product(matA[i], matBT[j], n);
+                matC[i][j] = get_vector_dot_product(matA[i], matBT[j], n);		// Blocking and taking dot product
             }
         }
 
@@ -190,7 +164,7 @@ int get_num_execution(double mean, double std) {
 
 }
 
-// Run the test cases to collect sufficient number of samples and
+// This method is used for execute the matrix multiplication process for a given number of iterations for a given size of n
 void test_bench(double **matA, double **matB, double **matTB, double **matC, double * execution_times, int n, int block_size, int num_execution_times)
 {
     double dtime;
@@ -198,10 +172,10 @@ void test_bench(double **matA, double **matB, double **matTB, double **matC, dou
     {
         populate_array(matA, matB, n);
 
-        dtime = omp_get_wtime();
-        get_parallel_matrix_mulT(matA, matB, matTB, matC, n, block_size);
-        dtime = omp_get_wtime() - dtime;
-        execution_times[i] = dtime;
+        dtime = omp_get_wtime();											// Start time
+        get_parallel_matrix_mulT(matA, matB, matTB, matC, n, block_size);	// Execute matrix multiplication
+        dtime = omp_get_wtime() - dtime;									// End time
+        execution_times[i] = dtime;											// Record execution time
 
     }
 
@@ -233,19 +207,15 @@ void free_memory(double ** data, int n)
 
 int main() {
     int i, j, n, mat_size_min = 200, mat_size_max = 2000, steps = 200;
-    int gen_iterations = 100;
-    int suf_iterations = 0;
+    int gen_iterations = 100;											// Initial sample size
+    int suf_iterations = 0;												// Store the calculated sample size
     double **matA, **matB, **matC, **matBT, dtime, mean, std;
     double *execution_times;
-    int block_size = 10;
-    n = 1000;
+    int block_size = 10;											// Define the block size for cache blocking
 
-
-    // Populate array
-
-    for (size_t i = mat_size_min; i <= mat_size_max; i += steps)
+    for (size_t i = mat_size_min; i <= mat_size_max; i += steps)	// From 200 to 2000 in steps of 200
     {
-        // Allocate memory
+        // Allocate memory for matrices
 
         matA = new double*[i];
         matB = new double*[i];
@@ -263,12 +233,12 @@ int main() {
 
         /*suf_iterations = calculate_sample_size(mata, matb, matc, n);
         cout << "sufficient number of samples: " << suf_iterations;*/
-        suf_iterations = 20;
+        suf_iterations = 50;													// Sufficient amount of iterations
         execution_times = new double[suf_iterations];
-        test_bench(matA, matB, matBT, matC, execution_times, i, block_size, suf_iterations);
-        mean = get_mean(execution_times, suf_iterations);
+        test_bench(matA, matB, matBT, matC, execution_times, i, block_size, suf_iterations);	// Execute the matrix multiplication for given number of iterations
+        mean = get_mean(execution_times, suf_iterations);										// Calculate mean of execution times
 
-        cout << "Mean execution time for matrix size " << i << "x" << i << " : " << mean << "s"<<endl;
+        cout << "Mean execution time for matrix size " << i << "x" << i << " : " << mean << "s"<<endl;	// Print reults
 
         free_memory(matA, i);
         free_memory(matB, i);		// Free allocated memmory for 2-d arrays
