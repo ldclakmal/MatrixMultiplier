@@ -1,5 +1,5 @@
 /* File:
-*     ParallelFor_Mat_Mul.cpp
+*     parallel_for_matrix_multiplier.cpp
 *
 *
 * Purpose:

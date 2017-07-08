@@ -1,5 +1,5 @@
 /* File:
- *     Optimized_Mat_Mul.cpp
+ *     optimized_parallel_for_matrix_multiplier.cpp
  *
  *
  * Purpose:

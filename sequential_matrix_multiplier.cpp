@@ -1,5 +1,5 @@
 /* File:
- *     Matrix_Mult.cpp
+ *     sequential_matrix_multiplier.cpp
  *
  *
  * Purpose:
