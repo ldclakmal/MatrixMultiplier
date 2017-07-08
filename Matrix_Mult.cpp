@@ -1,3 +1,25 @@
+/* File:
+ *     Matrix_Mult.cpp
+ *
+ *
+ * Purpose:
+ *     Computes a sequential matrix-matrix multiplication.
+ *     Matrix size changes from 200 to 2000 in steps of 200.
+ *
+ * Input:
+ *     None unless compiled with DEBUG flag.
+ *
+ * Output:
+ *     Elapsed time for the computation for each size of matrix.
+ *
+ * Compile:
+ *    g++ -fopenmp -lgomp -std=c++11 Matrix_Mult.cpp -o out
+ *
+ * Usage:
+ *    ./out
+ *
+ */
+
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
