@@ -14,7 +14,7 @@
  *     Elapsed time for the computation for each size of matrix.
  *
  * Compile:
- *    g++ -fopenmp -lgomp -std=c++11 Matrix_Mult.cpp -o out
+ *    g++ -fopenmp -lgomp -std=c++11 optimized_parallel_for_matrix_multiplier.cpp -o out
  *
  * Usage:
  *    ./out
